@@ -6,7 +6,7 @@
     <title>Happy Birthday Wishes</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
     <style>
-        /* General Styles */
+        /* Your CSS Styles here... */
         body {
             font-family: 'Google Sans', sans-serif;
             background-color: #f8f8f8;
@@ -21,7 +21,6 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Container holding both carousel and text */
         .container {
             display: flex;
             justify-content: flex-start;
@@ -35,40 +34,8 @@
             flex-wrap: wrap;
             margin-bottom: 20px;
             width: 100%;
-            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Dark Mode for container */
-        .dark-mode .container {
-            background-color: #333;
-        }
-
-        /* Dark Mode for text */
-        .dark-mode .text-container {
-            color: white;
-        }
-
-        .dark-mode .text-container h1 {
-            color: orange;
-        }
-
-        .dark-mode .text-container p {
-            color: white;
-        }
-
-        .dark-mode .credits {
-            color: white;
-        }
-
-        .dark-mode .credits a {
-            color: skyblue;
-        }
-
-        .dark-mode .credits span {
-            color: red;
-        }
-
-        /* Image Section */
         .carousel {
             flex: 1;
             min-width: 250px;
@@ -95,7 +62,6 @@
             border-radius: 15px;
         }
 
-        /* Dots styled like Instagram */
         .dots {
             display: flex;
             justify-content: center;
@@ -121,7 +87,6 @@
             opacity: 1;
         }
 
-        /* Text Section */
         .text-container {
             flex: 2;
             line-height: 1.6;
@@ -142,13 +107,6 @@
             margin: 10px 0;
         }
 
-        .text-container .message {
-            font-size: 16px;
-            color: #555;
-            margin: 15px 0;
-        }
-
-        /* Credits Section */
         .credits {
             text-align: center;
             font-size: 14px;
@@ -162,11 +120,6 @@
             font-weight: bold;
         }
 
-        .credits span {
-            color: red;
-        }
-
-        /* Buttons Styling */
         .footer-buttons {
             position: fixed;
             bottom: 18px;
@@ -191,52 +144,6 @@
         .dark-mode {
             background-color: #2e2e2e;
             color: white;
-        }
-
-        /* Mobile Responsive Styles */
-        @media screen and (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                padding: 15px;
-                width: auto;
-            }
-
-            .carousel {
-                width: 100%;
-                height: 200px;
-            }
-
-            .footer-buttons {
-                bottom: 10px;
-                right: 10px;
-                flex-direction: row;
-            }
-
-            .text-container {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .text-container h1 {
-                font-size: 28px;
-            }
-
-            .text-container p {
-                font-size: 16px;
-            }
-
-            .carousel {
-                height: 150px;
-            }
-
-            .footer-buttons button {
-                padding: 8px;
-                font-size: 14px;
-            }
         }
     </style>
 </head>
@@ -284,13 +191,16 @@
     <script>
         // Fetch files from GitHub repository dynamically using the API
         function fetchFiles(folder) {
-            const repoUrl = 'https://api.github.com/repos/krthyk/bday/contents/' + folder;
+            const repoUrl = `https://api.github.com/repos/krthyk/bday/contents/${folder}`;
             return fetch(repoUrl)
                 .then(response => response.json())
-                .catch(error => console.error('Error fetching files:', error));
+                .catch(error => {
+                    console.error('Error fetching files:', error);
+                    alert("There was an error fetching the files from GitHub.");
+                });
         }
 
-        // Load images dynamically
+        // Load images dynamically for the carousel
         function loadImages() {
             fetchFiles('images').then(files => {
                 const carouselImages = document.querySelector('.carousel-images');
@@ -307,13 +217,19 @@
 
         // Load audio dynamically
         function loadAudio() {
+            const audioElement = document.getElementById('birthday-song');
+            const audioSource = document.getElementById('audio-source');
+
             fetch('https://raw.githubusercontent.com/krthyk/bday/main/audio/hbd.mp3')
                 .then(response => response.blob())
                 .then(blob => {
-                    const audioSource = document.getElementById('audio-source');
                     audioSource.src = URL.createObjectURL(blob);
+                    audioElement.load();
                 })
-                .catch(error => console.error('Error loading audio:', error));
+                .catch(error => {
+                    console.error('Error loading audio:', error);
+                    alert("There was an error loading the audio.");
+                });
         }
 
         // Load text content (title, wish, credits)
@@ -363,5 +279,6 @@
             loadTextContent();
         };
     </script>
+
 </body>
 </html>
