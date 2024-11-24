@@ -272,12 +272,22 @@
                     document.getElementById('birthday-message').textContent = data;
                 });
 
-            fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/credit.txt')
+            fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/credits.txt') // Corrected the file name
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('credits-text').innerHTML = data;
-                    const artistName = data.split('by')[1].trim();
-                    document.getElementById('artist-name').textContent = artistName;
+
+                    // Extract artist name from credits (if format is consistent, e.g., "by <artist-name>")
+                    const artistNameMatch = data.match(/by\s+(.+)$/);
+                    if (artistNameMatch) {
+                        document.getElementById('artist-name').textContent = artistNameMatch[1].trim();
+                    } else {
+                        document.getElementById('artist-name').textContent = 'Unknown Artist';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading credits:', error);
+                    alert("There was an error loading the credits.");
                 });
         }
 
