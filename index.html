@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday Wishes</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
     <style>
-        /* Your CSS Styles here... */
         body {
             font-family: 'Google Sans', sans-serif;
             background-color: #f8f8f8;
@@ -130,7 +130,8 @@
             align-items: center;
         }
 
-        .mute-button, .dark-mode-toggle {
+        .mute-button,
+        .dark-mode-toggle {
             background: #444;
             color: white;
             padding: 8px 12px;
@@ -147,6 +148,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -201,6 +203,9 @@
         }
 
         // Load images dynamically for the carousel
+        let currentIndex = 0;
+        let images = [];
+
         function loadImages() {
             fetchFiles('images').then(files => {
                 const carouselImages = document.querySelector('.carousel-images');
@@ -209,10 +214,31 @@
                         const img = document.createElement('img');
                         img.src = file.download_url;
                         img.alt = file.name;
-                        carouselImages.appendChild(img);
+                        images.push(img);
                     }
                 });
+                updateCarousel();
             });
+        }
+
+        function updateCarousel() {
+            const carouselImages = document.querySelector('.carousel-images');
+            carouselImages.innerHTML = '';
+            images.forEach(img => {
+                carouselImages.appendChild(img);
+            });
+            setInterval(nextImage, 3000); // Change image every 3 seconds
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            const carouselImages = document.querySelector('.carousel-images');
+            carouselImages.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+            // Update dots
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach(dot => dot.classList.remove('active-dot'));
+            dots[currentIndex].classList.add('active-dot');
         }
 
         // Load audio dynamically
@@ -281,4 +307,5 @@
     </script>
 
 </body>
+
 </html>
