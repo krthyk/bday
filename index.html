@@ -34,6 +34,7 @@
             flex-wrap: wrap;
             margin-bottom: 20px;
             width: 100%;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .carousel {
@@ -142,9 +143,26 @@
             transition: all 0.3s ease;
         }
 
+        /* Dark mode styles for the container and text */
         .dark-mode {
             background-color: #2e2e2e;
             color: white;
+        }
+
+        .dark-mode .container {
+            background-color: #444;
+        }
+
+        .dark-mode .text-container h1 {
+            color: #ffcc00; /* Bright title in dark mode */
+        }
+
+        .dark-mode .text-container p {
+            color: #fff; /* White text for the wish message in dark mode */
+        }
+
+        .dark-mode .credits {
+            color: #bbb;
         }
     </style>
 </head>
@@ -203,9 +221,6 @@
         }
 
         // Load images dynamically for the carousel
-        let currentIndex = 0;
-        let images = [];
-
         function loadImages() {
             fetchFiles('images').then(files => {
                 const carouselImages = document.querySelector('.carousel-images');
@@ -214,31 +229,10 @@
                         const img = document.createElement('img');
                         img.src = file.download_url;
                         img.alt = file.name;
-                        images.push(img);
+                        carouselImages.appendChild(img);
                     }
                 });
-                updateCarousel();
             });
-        }
-
-        function updateCarousel() {
-            const carouselImages = document.querySelector('.carousel-images');
-            carouselImages.innerHTML = '';
-            images.forEach(img => {
-                carouselImages.appendChild(img);
-            });
-            setInterval(nextImage, 3000); // Change image every 3 seconds
-        }
-
-        function nextImage() {
-            currentIndex = (currentIndex + 1) % images.length;
-            const carouselImages = document.querySelector('.carousel-images');
-            carouselImages.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-            // Update dots
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach(dot => dot.classList.remove('active-dot'));
-            dots[currentIndex].classList.add('active-dot');
         }
 
         // Load audio dynamically
@@ -296,6 +290,7 @@
         // Dark Mode Toggle functionality
         document.getElementById('dark-mode-toggle').addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
+            document.querySelector('.container').classList.toggle('dark-mode');
         });
 
         // Load all content when the page is loaded
