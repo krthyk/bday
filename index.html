@@ -259,8 +259,8 @@
 
         <!-- Text Section -->
         <div class="text-container">
-            <h1>HAPPY BIRTHDAY! 🎉</h1>
-            <p class="message">Wishing you a year of laughter, adventures, and great moments! I hope your life keeps running like the best code: no bugs, no crashes, just seamless updates to your happiness.</p>
+            <h1 id="birthday-title">Loading...</h1>
+            <p id="birthday-message" class="message">Loading...</p>
         </div>
     </div>
 
@@ -272,7 +272,7 @@
 
     <!-- Credits Section -->
     <div class="credits">
-        <p>Made with ❤️ by <a href="#" target="_blank">Artist</a></p>
+        <p id="credits-text">Made with ❤️ by <span id="artist-name">Loading...</span></p>
     </div>
 
     <!-- Footer with buttons -->
@@ -282,55 +282,91 @@
     </div>
 
     <script>
-        // Fetch the files from GitHub using the GitHub API
+        // Fetch files from GitHub repository dynamically using the API
         function fetchFiles(folder) {
-            const repoUrl = 'https://api.github.com/repos/your-username/your-repository-name/contents/' + folder;
+            const repoUrl = 'https://api.github.com/repos/krthyk/bday/contents/' + folder;
             return fetch(repoUrl)
                 .then(response => response.json())
-                .catch(error => {
-                    console.error('Error fetching files:', error);
-                });
+                .catch(error => console.error('Error fetching files:', error));
         }
 
         // Load images dynamically
-        fetchFiles('images').then(files => {
-            const carouselImages = document.querySelector('.carousel-images');
-            files.forEach(file => {
-                if (file.name.endsWith('.jpg') || file.name.endsWith('.jpeg') || file.name.endsWith('.png')) {
-                    const img = document.createElement('img');
-                    img.src = file.download_url;  // Use the raw image URL
-                    img.alt = file.name;
-                    carouselImages.appendChild(img);
-                }
+        function loadImages() {
+            fetchFiles('images').then(files => {
+                const carouselImages = document.querySelector('.carousel-images');
+                files.forEach(file => {
+                    if (file.name.endsWith('.jpg') || file.name.endsWith('.jpeg') || file.name.endsWith('.png')) {
+                        const img = document.createElement('img');
+                        img.src = file.download_url;  // Use the raw image URL
+                        img.alt = file.name;
+                        carouselImages.appendChild(img);
+                    }
+                });
             });
-        });
+        }
 
         // Load audio dynamically
-        fetchFiles('audio').then(files => {
-            const audioSource = document.getElementById('audio-source');
-            files.forEach(file => {
-                if (file.name.endsWith('.mp3')) {
-                    audioSource.src = file.download_url;  // Use the raw audio URL
-                    document.getElementById('birthday-song').load(); // Reload the audio element
-                }
+        function loadAudio() {
+            fetchFiles('audio').then(files => {
+                const audioElement = document.getElementById('audio-source');
+                files.forEach(file => {
+                    if (file.name.endsWith('.mp3')) {
+                        audioElement.src = file.download_url;
+                    }
+                });
             });
+        }
+
+        // Load text content from GitHub
+        function loadTextContent() {
+            // Load Title
+            fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/title.txt')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('birthday-title').textContent = data;
+                });
+
+            // Load Birthday message
+            fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/wish.txt')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('birthday-message').textContent = data;
+                });
+
+            // Load credits (extract artist's name from the text)
+            fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/credit.txt')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('credits-text').innerHTML = data;
+                    // Extract artist name from the text (assuming format: "Made with ❤️ by ArtistName")
+                    const artistName = data.split('by')[1].trim();
+                    document.getElementById('artist-name').textContent = artistName;
+                });
+        }
+
+        // Mute button functionality
+        document.getElementById('mute-button').addEventListener('click', () => {
+            const audioElement = document.getElementById('birthday-song');
+            if (audioElement.muted) {
+                audioElement.muted = false;
+                document.getElementById('mute-button').textContent = '🔊';
+            } else {
+                audioElement.muted = true;
+                document.getElementById('mute-button').textContent = '🔈';
+            }
         });
 
-        // Dark mode toggle functionality
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        darkModeToggle.addEventListener('click', () => {
-            const isDarkMode = document.body.classList.toggle('dark-mode');
-            darkModeToggle.textContent = isDarkMode ? '🌞' : '🌙';
+        // Dark Mode Toggle functionality
+        document.getElementById('dark-mode-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
         });
 
-        // Mute functionality
-        const muteButton = document.getElementById('mute-button');
-        const audioElement = document.getElementById('birthday-song');
-        muteButton.addEventListener('click', () => {
-            audioElement.muted = !audioElement.muted;
-            muteButton.textContent = audioElement.muted ? '🔇' : '🔊';
-        });
+        // Load all content when the page is loaded
+        window.onload = () => {
+            loadImages();
+            loadAudio();
+            loadTextContent();
+        };
     </script>
-
 </body>
 </html>
