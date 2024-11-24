@@ -6,7 +6,7 @@
     <title>Happy Birthday Wishes</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
     <style>
-        /* Styles remain unchanged */
+        /* Your existing styles remain here */
     </style>
 </head>
 <body>
@@ -14,20 +14,12 @@
     <div class="container">
         <!-- Image Carousel Section -->
         <div class="carousel">
-            <div class="carousel-images">
-                <img src="images/image1.jpg" alt="Birthday Image 1">
-                <img src="images/image2.jpg" alt="Birthday Image 2">
-                <img src="images/image3.jpg" alt="Birthday Image 3">
-                <img src="images/image4.jpg" alt="Birthday Image 4">
-                <img src="images/image5.jpg" alt="Birthday Image 5">
+            <div class="carousel-images" id="carousel-images">
+                <!-- Images will be loaded dynamically -->
             </div>
             <!-- Dots to indicate image position -->
-            <div class="dots">
-                <span class="dot active-dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
+            <div class="dots" id="carousel-dots">
+                <!-- Dots will be generated dynamically -->
             </div>
         </div>
 
@@ -45,7 +37,7 @@
 
     <!-- Background Music -->
     <audio id="birthday-song" loop autoplay>
-        <source src="audio/birthday-song.mp3" type="audio/mp3">
+        <source id="audio-source" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 
@@ -58,6 +50,55 @@
     </div>
 
     <script>
+        // GitHub Repository Configuration
+        const username = "krthyk";
+        const repository = "bday";
+        const branch = "main"; // Main branch
+
+        const baseURL = `https://raw.githubusercontent.com/${username}/${repository}/${branch}`;
+
+        // Dynamically fetch images from the repository's `images` folder
+        const imagesFolder = `${baseURL}/images/`;
+        const imageNames = ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg"]; // Add image names here
+        const carouselImagesContainer = document.getElementById("carousel-images");
+        const carouselDotsContainer = document.getElementById("carousel-dots");
+
+        imageNames.forEach((imageName, index) => {
+            const img = document.createElement("img");
+            img.src = `${imagesFolder}${imageName}`;
+            img.alt = `Birthday Image ${index + 1}`;
+            carouselImagesContainer.appendChild(img);
+
+            const dot = document.createElement("span");
+            dot.className = "dot";
+            if (index === 0) dot.classList.add("active-dot");
+            carouselDotsContainer.appendChild(dot);
+        });
+
+        // Dynamically fetch text files for title, wish, and credits
+        function loadText(filePath, elementId) {
+            fetch(filePath)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Error fetching ${filePath}`);
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById(elementId).innerText = data;
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById(elementId).innerText = "Error loading content.";
+                });
+        }
+
+        loadText(`${baseURL}/texts/title.txt`, "title");
+        loadText(`${baseURL}/texts/wish.txt`, "wish");
+        loadText(`${baseURL}/texts/credits.txt`, "credits");
+
+        // Dynamically set audio source
+        const audioSource = document.getElementById("audio-source");
+        audioSource.src = `${baseURL}/audio/birthday-song.mp3`;
+
         // Carousel Functionality
         const carouselImages = document.querySelector('.carousel-images');
         const dots = document.querySelectorAll('.dot');
@@ -68,60 +109,37 @@
             dots.forEach((dot, index) => {
                 dot.classList.remove('active-dot');
                 if (index === currentIndex) {
-                    dot.classList.add('active-dot');
+                    dot.classList.add("active-dot");
                 }
             });
         }
 
         setInterval(() => {
-            currentIndex = (currentIndex + 1) % dots.length;
+            currentIndex = (currentIndex + 1) % imageNames.length;
             updateCarousel();
         }, 1500);
 
         dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
+            dot.addEventListener("click", () => {
                 currentIndex = index;
                 updateCarousel();
             });
         });
 
         // Dark Mode Toggle
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        darkModeToggle.addEventListener('click', () => {
-            const isDarkMode = document.body.classList.toggle('dark-mode');
-            darkModeToggle.textContent = isDarkMode ? '🌞' : '🌙';
+        const darkModeToggle = document.getElementById("dark-mode-toggle");
+        darkModeToggle.addEventListener("click", () => {
+            const isDarkMode = document.body.classList.toggle("dark-mode");
+            darkModeToggle.textContent = isDarkMode ? "🌞" : "🌙";
         });
 
         // Mute Button
-        const muteButton = document.getElementById('mute-button');
-        const audioElement = document.getElementById('birthday-song');
-        muteButton.addEventListener('click', () => {
+        const muteButton = document.getElementById("mute-button");
+        const audioElement = document.getElementById("birthday-song");
+        muteButton.addEventListener("click", () => {
             audioElement.muted = !audioElement.muted;
-            muteButton.textContent = audioElement.muted ? '🔇' : '🔊';
+            muteButton.textContent = audioElement.muted ? "🔇" : "🔊";
         });
-
-        // Load text from external files
-        function loadText(filePath, elementId) {
-            fetch(filePath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Could not fetch ${filePath}`);
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    document.getElementById(elementId).innerText = data;
-                })
-                .catch(error => {
-                    console.error(error);
-                    document.getElementById(elementId).innerText = "Error loading content.";
-                });
-        }
-
-        // Load dynamic text
-        loadText('texts/title.txt', 'title');
-        loadText('texts/wish.txt', 'wish');
-        loadText('texts/credits.txt', 'credits');
     </script>
 </body>
 </html>
