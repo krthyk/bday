@@ -40,34 +40,32 @@
 
         /* Dark Mode for container */
         .dark-mode .container {
-            background-color: #333; /* Dark background for container */
+            background-color: #333;
         }
 
         /* Dark Mode for text */
         .dark-mode .text-container {
-            color: white; /* Change text color to white in dark mode */
+            color: white;
         }
 
-        /* Keep the <h1> in its original color */
         .dark-mode .text-container h1 {
-            color: orange; /* Or your desired color */
+            color: orange;
         }
 
-        /* Make paragraphs and credits text white */
         .dark-mode .text-container p {
-            color: white; /* Change paragraph text to white */
+            color: white;
         }
 
         .dark-mode .credits {
-            color: white; /* Change credits text color to white */
+            color: white;
         }
 
         .dark-mode .credits a {
-            color: skyblue; /* Keep the artist's name link color */
+            color: skyblue;
         }
 
         .dark-mode .credits span {
-            color: red; /* Keep artist's name color unchanged */
+            color: red;
         }
 
         /* Image Section */
@@ -128,7 +126,7 @@
             flex: 2;
             line-height: 1.6;
             padding-left: 20px;
-            color: #333; /* Default text color */
+            color: #333;
             width: 100%;
             text-align: left;
         }
@@ -161,7 +159,7 @@
             color: skyblue;
             text-decoration: none;
             font-style: italic;
-            font-weight: bold; /* Make artist's name bold */
+            font-weight: bold;
         }
 
         .credits span {
@@ -216,14 +214,12 @@
                 flex-direction: row;
             }
 
-            /* Adjust text padding for mobile */
             .text-container {
                 padding-left: 10px;
                 padding-right: 10px;
             }
         }
 
-        /* Further responsiveness for very small screens */
         @media screen and (max-width: 480px) {
             .text-container h1 {
                 font-size: 28px;
@@ -250,7 +246,7 @@
         <!-- Image Carousel Section -->
         <div class="carousel">
             <div class="carousel-images">
-                <!-- Images will be loaded dynamically here -->
+                <!-- Images will be dynamically loaded here -->
             </div>
             <div class="dots">
                 <span class="dot active-dot"></span>
@@ -264,20 +260,20 @@
         <!-- Text Section -->
         <div class="text-container">
             <h1>HAPPY BIRTHDAY! 🎉</h1>
-            <p class="message">Wishing you a year of laughter, adventures, and great moments!</p>
+            <p class="message">Wishing you a year of laughter, adventures, and great moments! I hope your life keeps running like the best code: no bugs, no crashes, just seamless updates to your happiness.</p>
         </div>
     </div>
 
-    <!-- Credits Section -->
-    <div class="credits">
-        <p>Made with <span>&#10084;</span> by <a href="#" target="_blank">Artist</a></p>
-    </div>
-
-    <!-- Background Music -->
+    <!-- Audio Section -->
     <audio id="birthday-song" loop autoplay>
-        <source id="audio-source" type="audio/mp3">
+        <source id="audio-source" src="" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
+
+    <!-- Credits Section -->
+    <div class="credits">
+        <p>Made with ❤️ by <a href="#" target="_blank">Artist</a></p>
+    </div>
 
     <!-- Footer with buttons -->
     <div class="footer-buttons">
@@ -286,16 +282,11 @@
     </div>
 
     <script>
-        // GitHub repository information
-        const repoUrl = 'https://api.github.com/repos/krthyk/bday/contents/';
-
-        // Function to fetch files from GitHub
+        // Fetch the files from GitHub using the GitHub API
         function fetchFiles(folder) {
-            return fetch(repoUrl + folder)
+            const repoUrl = 'https://api.github.com/repos/your-username/your-repository-name/contents/' + folder;
+            return fetch(repoUrl)
                 .then(response => response.json())
-                .then(data => {
-                    return data.filter(file => file.name.endsWith('.jpg') || file.name.endsWith('.jpeg') || file.name.endsWith('.png') || file.name.endsWith('.mp3'));
-                })
                 .catch(error => {
                     console.error('Error fetching files:', error);
                 });
@@ -320,34 +311,8 @@
             files.forEach(file => {
                 if (file.name.endsWith('.mp3')) {
                     audioSource.src = file.download_url;  // Use the raw audio URL
+                    document.getElementById('birthday-song').load(); // Reload the audio element
                 }
-            });
-        });
-
-        // Carousel functionality
-        const carouselImages = document.querySelector('.carousel-images');
-        const dots = document.querySelectorAll('.dot');
-        let currentIndex = 0;
-
-        function updateCarousel() {
-            carouselImages.style.transform = `translateX(-${currentIndex * 100}%)`;
-            dots.forEach((dot, index) => {
-                dot.classList.remove('active-dot');
-                if (index === currentIndex) {
-                    dot.classList.add('active-dot');
-                }
-            });
-        }
-
-        setInterval(() => {
-            currentIndex = (currentIndex + 1) % dots.length;
-            updateCarousel();
-        }, 1500);
-
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                currentIndex = index;
-                updateCarousel();
             });
         });
 
@@ -366,5 +331,6 @@
             muteButton.textContent = audioElement.muted ? '🔇' : '🔊';
         });
     </script>
+
 </body>
 </html>
