@@ -6,16 +6,162 @@
     <title>Happy Birthday Wishes</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
     <style>
-        /* Your CSS styles go here */
+        /* General Styles */
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Container holding both carousel and text */
+        .container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 900px;
+            text-align: left;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        /* Image Section */
+        .carousel {
+            flex: 1;
+            min-width: 250px;
+            margin-right: 20px;
+            overflow: hidden;
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .carousel-images {
+            display: flex;
+            transition: transform 0.5s ease;
+            width: 100%;
+        }
+
+        .carousel-images img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        .active-dot {
+            background-color: #fff;
+            opacity: 1;
+        }
+
+        /* Text Section */
+        .text-container {
+            flex: 2;
+            line-height: 1.6;
+            padding-left: 20px;
+            color: #333;
+            width: 100%;
+            text-align: left;
+        }
+
+        .text-container h1 {
+            font-size: 32px;
+            color: orange;
+            margin-bottom: 10px;
+        }
+
+        .text-container p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .credits {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .credits a {
+            color: skyblue;
+            text-decoration: none;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        /* Footer Buttons */
+        .footer-buttons {
+            position: fixed;
+            bottom: 18px;
+            right: 27px;
+            display: flex;
+            gap: 5.4px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mute-button, .dark-mode-toggle {
+            background: #444;
+            color: white;
+            padding: 8px 12px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 15px;
+                width: auto;
+            }
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <!-- Image Carousel Section -->
         <div class="carousel">
             <div class="carousel-images">
-                <!-- Images will be loaded dynamically here -->
+                <!-- Images will be loaded dynamically from JSON -->
             </div>
             <div class="dots">
                 <span class="dot active-dot"></span>
@@ -26,68 +172,72 @@
             </div>
         </div>
 
-        <!-- Text Section -->
         <div class="text-container">
             <h1>HAPPY BIRTHDAY! 🎉</h1>
             <p class="message">Wishing you a year of laughter, adventures, and great moments!</p>
         </div>
     </div>
 
-    <!-- Credits Section -->
     <div class="credits">
         <p>Made with <span>&#10084;</span> by <a href="#" target="_blank">Artist</a></p>
     </div>
 
-    <!-- Background Music -->
     <audio id="birthday-song" loop autoplay>
         <source id="audio-source" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 
-    <!-- Footer with buttons -->
     <div class="footer-buttons">
         <button id="mute-button" class="mute-button">🔊</button>
         <button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
     </div>
 
     <script>
-        // GitHub repository information
-        const repoUrl = 'https://api.github.com/repos/your-username/your-repository-name/contents/';
-
-        // Fetch and display image files from GitHub
-        fetch(repoUrl + 'images')  // Change 'images' to your actual folder name
+        // Fetch JSON data from GitHub
+        fetch('https://raw.githubusercontent.com/your-username/your-repository-name/main/files.json')
             .then(response => response.json())
             .then(data => {
                 const carouselImages = document.querySelector('.carousel-images');
-                data.forEach(file => {
-                    if (file.name.endsWith('.jpg') || file.name.endsWith('.jpeg') || file.name.endsWith('.png')) {
-                        const img = document.createElement('img');
-                        img.src = file.download_url;  // Use the raw download URL from GitHub
-                        img.alt = file.name;
-                        carouselImages.appendChild(img);
-                    }
+                data.images.forEach((imageUrl, index) => {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = `Birthday Image ${index + 1}`;
+                    carouselImages.appendChild(img);
                 });
+
+                // Set the audio source
+                const audioSource = document.getElementById('audio-source');
+                audioSource.src = data.audio;
             })
             .catch(error => {
-                console.error('Error loading image files:', error);
+                console.error('Error loading JSON data:', error);
             });
 
-        // Fetch and set audio file from GitHub
-        fetch(repoUrl + 'audio')  // Change 'audio' to your actual folder name
-            .then(response => response.json())
-            .then(data => {
-                const audioElement = document.getElementById('birthday-song');
-                const audioSource = document.getElementById('audio-source');
-                
-                data.forEach(file => {
-                    if (file.name.endsWith('.mp3')) {
-                        audioSource.src = file.download_url;  // Set the raw MP3 URL from GitHub
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Error loading audio file:', error);
+        // Carousel and other interactive functionality
+        const dots = document.querySelectorAll('.dot');
+        let currentIndex = 0;
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % dots.length;
+            updateCarousel();
+        }, 1500);
+
+        function updateCarousel() {
+            const carouselImages = document.querySelector('.carousel-images');
+            carouselImages.style.transform = `translateX(-${currentIndex * 100}%)`;
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active-dot');
+                if (index === currentIndex) {
+                    dot.classList.add('active-dot');
+                }
             });
+        }
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+            });
+        });
 
         // Dark Mode Toggle
         const darkModeToggle = document.getElementById('dark-mode-toggle');
