@@ -295,9 +295,9 @@
             fetchFiles('images').then(files => {
                 const carouselImages = document.querySelector('.carousel-images');
                 files.forEach(file => {
-                    if (file.name.endsWith('.jpg') || file.name.endsWith('.jpeg') || file.name.endsWith('.png')) {
+                    if (file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|gif)$/)) {
                         const img = document.createElement('img');
-                        img.src = file.download_url;  // Use the raw image URL
+                        img.src = file.download_url;
                         img.alt = file.name;
                         carouselImages.appendChild(img);
                     }
@@ -307,38 +307,33 @@
 
         // Load audio dynamically
         function loadAudio() {
-            fetchFiles('audio').then(files => {
-                const audioElement = document.getElementById('audio-source');
-                files.forEach(file => {
-                    if (file.name.endsWith('.mp3')) {
-                        audioElement.src = file.download_url;
-                    }
-                });
-            });
+            fetch('https://raw.githubusercontent.com/krthyk/bday/main/audio/hbd.mp3')
+                .then(response => response.blob())
+                .then(blob => {
+                    const audioSource = document.getElementById('audio-source');
+                    audioSource.src = URL.createObjectURL(blob);
+                })
+                .catch(error => console.error('Error loading audio:', error));
         }
 
-        // Load text content from GitHub
+        // Load text content (title, wish, credits)
         function loadTextContent() {
-            // Load Title
             fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/title.txt')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('birthday-title').textContent = data;
                 });
 
-            // Load Birthday message
             fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/wish.txt')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('birthday-message').textContent = data;
                 });
 
-            // Load credits (extract artist's name from the text)
             fetch('https://raw.githubusercontent.com/krthyk/bday/main/texts/credit.txt')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('credits-text').innerHTML = data;
-                    // Extract artist name from the text (assuming format: "Made with ❤️ by ArtistName")
                     const artistName = data.split('by')[1].trim();
                     document.getElementById('artist-name').textContent = artistName;
                 });
