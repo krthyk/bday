@@ -20,7 +20,7 @@
             flex-direction: column;
             transition: background-color 0.3s, color 0.3s;
         }
-        
+
         /* Container holding both carousel and text */
         .container {
             display: flex;
@@ -35,6 +35,39 @@
             flex-wrap: wrap;
             margin-bottom: 20px;
             width: 100%;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Dark Mode for container */
+        .dark-mode .container {
+            background-color: #333; /* Dark background for container */
+        }
+
+        /* Dark Mode for text */
+        .dark-mode .text-container {
+            color: white; /* Change text color to white in dark mode */
+        }
+
+        /* Keep the <h1> in its original color */
+        .dark-mode .text-container h1 {
+            color: orange; /* Or your desired color */
+        }
+
+        /* Make paragraphs and credits text white */
+        .dark-mode .text-container p {
+            color: white; /* Change paragraph text to white */
+        }
+
+        .dark-mode .credits {
+            color: white; /* Change credits text color to white */
+        }
+
+        .dark-mode .credits a {
+            color: skyblue; /* Keep the artist's name link color */
+        }
+
+        .dark-mode .credits span {
+            color: red; /* Keep artist's name color unchanged */
         }
 
         /* Image Section */
@@ -64,6 +97,7 @@
             border-radius: 15px;
         }
 
+        /* Dots styled like Instagram */
         .dots {
             display: flex;
             justify-content: center;
@@ -94,7 +128,7 @@
             flex: 2;
             line-height: 1.6;
             padding-left: 20px;
-            color: #333;
+            color: #333; /* Default text color */
             width: 100%;
             text-align: left;
         }
@@ -110,6 +144,13 @@
             margin: 10px 0;
         }
 
+        .text-container .message {
+            font-size: 16px;
+            color: #555;
+            margin: 15px 0;
+        }
+
+        /* Credits Section */
         .credits {
             text-align: center;
             font-size: 14px;
@@ -120,10 +161,14 @@
             color: skyblue;
             text-decoration: none;
             font-style: italic;
-            font-weight: bold;
+            font-weight: bold; /* Make artist's name bold */
         }
 
-        /* Footer Buttons */
+        .credits span {
+            color: red;
+        }
+
+        /* Buttons Styling */
         .footer-buttons {
             position: fixed;
             bottom: 18px;
@@ -145,6 +190,11 @@
             transition: all 0.3s ease;
         }
 
+        .dark-mode {
+            background-color: #2e2e2e;
+            color: white;
+        }
+
         /* Mobile Responsive Styles */
         @media screen and (max-width: 768px) {
             .container {
@@ -154,14 +204,53 @@
                 padding: 15px;
                 width: auto;
             }
+
+            .carousel {
+                width: 100%;
+                height: 200px;
+            }
+
+            .footer-buttons {
+                bottom: 10px;
+                right: 10px;
+                flex-direction: row;
+            }
+
+            /* Adjust text padding for mobile */
+            .text-container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        }
+
+        /* Further responsiveness for very small screens */
+        @media screen and (max-width: 480px) {
+            .text-container h1 {
+                font-size: 28px;
+            }
+
+            .text-container p {
+                font-size: 16px;
+            }
+
+            .carousel {
+                height: 150px;
+            }
+
+            .footer-buttons button {
+                padding: 8px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
+
     <div class="container">
+        <!-- Image Carousel Section -->
         <div class="carousel">
             <div class="carousel-images">
-                <!-- Images will be loaded dynamically from JSON -->
+                <!-- Images will be loaded dynamically here -->
             </div>
             <div class="dots">
                 <span class="dot active-dot"></span>
@@ -172,72 +261,68 @@
             </div>
         </div>
 
+        <!-- Text Section -->
         <div class="text-container">
             <h1>HAPPY BIRTHDAY! 🎉</h1>
             <p class="message">Wishing you a year of laughter, adventures, and great moments!</p>
         </div>
     </div>
 
+    <!-- Credits Section -->
     <div class="credits">
         <p>Made with <span>&#10084;</span> by <a href="#" target="_blank">Artist</a></p>
     </div>
 
+    <!-- Background Music -->
     <audio id="birthday-song" loop autoplay>
         <source id="audio-source" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 
+    <!-- Footer with buttons -->
     <div class="footer-buttons">
         <button id="mute-button" class="mute-button">🔊</button>
         <button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
     </div>
 
     <script>
-        // Fetch JSON data from GitHub
-        fetch('https://raw.githubusercontent.com/your-username/your-repository-name/main/files.json')
+        // GitHub repository information
+        const repoUrl = 'https://api.github.com/repos/your-username/your-repository-name/contents/';
+
+        // Fetch and display image files from GitHub
+        fetch(repoUrl + 'images')  // Change 'images' to your actual folder name
             .then(response => response.json())
             .then(data => {
                 const carouselImages = document.querySelector('.carousel-images');
-                data.images.forEach((imageUrl, index) => {
-                    const img = document.createElement('img');
-                    img.src = imageUrl;
-                    img.alt = `Birthday Image ${index + 1}`;
-                    carouselImages.appendChild(img);
+                data.forEach(file => {
+                    if (file.name.endsWith('.jpg') || file.name.endsWith('.jpeg') || file.name.endsWith('.png')) {
+                        const img = document.createElement('img');
+                        img.src = file.download_url;  // Use the raw download URL from GitHub
+                        img.alt = file.name;
+                        carouselImages.appendChild(img);
+                    }
                 });
-
-                // Set the audio source
-                const audioSource = document.getElementById('audio-source');
-                audioSource.src = data.audio;
             })
             .catch(error => {
-                console.error('Error loading JSON data:', error);
+                console.error('Error loading image files:', error);
             });
 
-        // Carousel and other interactive functionality
-        const dots = document.querySelectorAll('.dot');
-        let currentIndex = 0;
-        setInterval(() => {
-            currentIndex = (currentIndex + 1) % dots.length;
-            updateCarousel();
-        }, 1500);
-
-        function updateCarousel() {
-            const carouselImages = document.querySelector('.carousel-images');
-            carouselImages.style.transform = `translateX(-${currentIndex * 100}%)`;
-            dots.forEach((dot, index) => {
-                dot.classList.remove('active-dot');
-                if (index === currentIndex) {
-                    dot.classList.add('active-dot');
-                }
+        // Fetch and set audio file from GitHub
+        fetch(repoUrl + 'audio')  // Change 'audio' to your actual folder name
+            .then(response => response.json())
+            .then(data => {
+                const audioElement = document.getElementById('birthday-song');
+                const audioSource = document.getElementById('audio-source');
+                
+                data.forEach(file => {
+                    if (file.name.endsWith('.mp3')) {
+                        audioSource.src = file.download_url;  // Set the raw MP3 URL from GitHub
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error loading audio file:', error);
             });
-        }
-
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                currentIndex = index;
-                updateCarousel();
-            });
-        });
 
         // Dark Mode Toggle
         const darkModeToggle = document.getElementById('dark-mode-toggle');
